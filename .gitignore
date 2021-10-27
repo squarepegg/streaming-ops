@@ -1,0 +1,17 @@
+.test/*
+!.test/.gitkeep
+
+Brewfile.lock.json
+
+secrets/keys/*.crt
+secrets/local-sealed/**/*.yaml
+secrets/local-sealed/**/*.yml
+secrets/local-sealed/**/*.json
+secrets/local-toseal/**/*.yaml
+secrets/local-toseal/**/*.yml
+secrets/local-toseal/**/*.json
+
+.data/*
+!.data/.gitkeep
+
+.idea/*

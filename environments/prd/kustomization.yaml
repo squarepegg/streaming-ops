@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  variant: prd
+resources:
+- ../base/
+patchesStrategicMerge:
+- ccloud/microservices-ccloud-environment.yaml
+- microservices-orders/orders-service.yaml
+- microservices-orders/inventory-service.yaml
+- microservices-orders/email-service.yaml
+- microservices-orders/fraud-service.yaml
+- microservices-orders/order-details-service.yaml
+- microservices-orders/orders-and-payments-simulator.yaml
+- microservices-orders/validations-aggregator-service.yaml
+- microservices-orders/add-inventory-cronjob.yaml
+- connect/connect-service.yaml
+- connect/connect-operator.yaml

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cc.shared-client-config
-  namespace: confluent
+  namespace: default
 data:
   shared-client.properties: |
     security.protocol=SASL_SSL

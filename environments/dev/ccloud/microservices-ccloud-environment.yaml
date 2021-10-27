@@ -10,7 +10,7 @@ data:
       {
         "name": "streaming-ops-dev",
         "schema-registry": {
-          "cloud": "gcp",
+          "cloud": "aws",
           "geo": "us",
           "api-key": [
             { "service-account": "streaming-ops-sr-client" }
@@ -19,65 +19,29 @@ data:
         "kafka": [
           {
             "name": "microservices-orders",
-            "cloud": "gcp",
-            "region": "us-central1",
+            "cloud": "aws",
+            "region": "us-west-2",
             "topic": [
-              { "name": "bronze", "partitions": 3 },
-              { "name": "gold", "partitions": 3 },
-              { "name": "silver", "partitions": 3  },
-              { "name": "platinum", "partitions": 3 },
-              { "name": "customers", "partitions": 3 },
-              { "name": "orders", "partitions": 3 },
-              { "name": "orders-enriched", "partitions": 3 },
-              { "name": "order-validations", "partitions": 3 },
-              { "name": "payments", "partitions": 3 },
-              { "name": "warehouse-inventory", "partitions": 3 },
-              { "name": "connect-configs", "partitions": 1, "config": "cleanup.policy=compact" },
-              { "name": "connect-offsets", "partitions": 6, "config": "cleanup.policy=compact" },
-              { "name": "connect-statuses", "partitions": 1, "config": "cleanup.policy=compact" },
-              { "name": "_confluent-monitoring" },
-              { "name": "_confluent-command" },
-              { "name": "pageviews", "partitions": 3 }
+              { "name": "test", "partitions": 3 },
+              { "name": "test-compact", "partitions": 1, "config": "cleanup.policy=compact" }
             ],
             "acl": [
               {
-                "service-account": "microservices-orders-client",
+                "service-account": "microservices-events-api",
                 "controls": [
                   { "operation" : "read,write,create,describe,describe-configs,delete", "permission": "allow",
                     "resource": "topic", "name": "*" },
                   { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "OrdersService" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "InventoryService" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "FraudService" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "OrderDetailsService" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "ValidationsAggregatorService" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "EmailService" },
+                    "resource": "consumer-group", "name": "EventsApi" },
                   { "operation" : "write,describe", "permission": "allow",
                     "resource": "transactional-id", "name": "*" },
                   { "operation" : "idempotent-write", "permission": "allow",
                     "resource": "cluster-scope" }
                 ]
-              },
-              {
-                "service-account": "connect-worker-client",
-                "controls": [
-                  { "operation" : "read,write,create,describe,describe-configs,delete", "permission": "allow",
-                    "resource": "topic", "name": "*", "prefix": "true" },
-                  { "operation" : "read", "permission": "allow",
-                    "resource": "consumer-group", "name": "streaming-ops-connect" },
-                  { "operation" : "describe", "permission": "allow",
-                    "resource": "cluster-scope" }
-                ]
               }
             ],
             "api-key": [
-              { "service-account": "microservices-orders-client" },
-              { "service-account": "connect-worker-client" }
+              { "service-account": "microservices-events-api" }
             ]
           }
         ]

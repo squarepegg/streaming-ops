@@ -7,14 +7,11 @@ metadata:
 data:
   service-accounts: |
     [
-      { "name": "microservices-orders-client",
-        "description": "Account for client microservices orders client apps"
+      { "name": "events-api-client",
+        "description": "Account for client microservices events api"
       }, {
         "name": "streaming-ops-sr-client",
         "description": "Account for client access to streaming-ops environment schema registry"
-      }, {
-        "name": "connect-worker-client",
-        "description": "Account for connect worker client access"
       }
     ]
 

@@ -3,8 +3,5 @@ kind: Kustomization
 
 resources:
 - security/
-- microservices-orders/
-- mysql/
-- connect/
 - ccloud/
 

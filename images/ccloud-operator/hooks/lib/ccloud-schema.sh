@@ -12,14 +12,9 @@ function ccloud::schema::apply_list() {
 	local existing_secret=$(kubectl get secrets/"$secret_name" -o json 2>/dev/null)
 	local ccloud_api_key=$(echo "$existing_secret" | jq -r -c '.data."ccloud-api-key"')
 
-  echo "secret: $ccloud_api_key"
-
   local ccloud_api_key_secret=$(echo "${ccloud_api_key}" | base64 -d)
-  local key=$(echo $ccloud_api_key_secret | jq -r .key)
-  local secret=$(echo $ccloud_api_key_secret | jq -r .secret)
-
-  echo "key: $key"
-  echo "secret: $secret"
+  local key=$(echo "$ccloud_api_key_secret" | jq -r .key)
+  local secret=$(echo "$ccloud_api_key_secret" | jq -r .secret)
 
 	for SCHEMA_ENCODED in $(echo "$schema" | jq -c -r '.[] | @base64'); do
 
@@ -41,7 +36,7 @@ function ccloud::schema::apply() {
 	local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
 	local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
 
-	echo $schema_file > /usr/schema.file
+	echo "$schema_file" > /usr/schema.file
 
 	local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema /usr/schema.file");
 
@@ -50,7 +45,9 @@ function ccloud::schema::apply() {
 	local apikey_flag="--api-key '${key}'"
 	local apisecret_flag="--api-secret '${secret}'"
 
-  error=$(ccloud schema-registry schema create $subject_flag $type_flag $schema_file_flag "$apikey_flag" "$apisecret_flag" 2>&1)
+	echo ccloud schema-registry schema create "$subject_flag" "$type_flag" "$schema_file_flag" "$apikey_flag" "$apisecret_flag"
+
+  error=$(ccloud schema-registry schema create "$subject_flag" "$type_flag" "$schema_file_flag" "$apikey_flag" "$apisecret_flag" 2>&1)
   echo "${error}"
 
 	retry 30 ccloud schema-registry schema create $subject_flag $type_flag $schema_file_flag "$apikey_flag" "$apisecret_flag" &> /dev/null && {

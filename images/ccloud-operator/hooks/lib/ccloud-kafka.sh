@@ -90,11 +90,11 @@ function ccloud::kafka::apply_secret_from_api_key_list() {
   local kafka_id api_key_list environment_name
   local "${@}"
 
-	for API_KEY_ENCODED in $(echo $api_key_list | jq -c -r '.[] | @base64'); do
+	for API_KEY_ENCODED in $(echo "$api_key_list" | jq -c -r '.[] | @base64'); do
 
 		API_KEY=$(echo "${API_KEY_ENCODED}" | base64 -d)
 
-    local service_account=$(echo $API_KEY | jq -r '."service-account"')
+    local service_account=$(echo "$API_KEY" | jq -r '."service-account"')
 
     ccloud::kafka::apply_secret_for_api_key service_account="$service_account" kafka_id="$kafka_id" environment_name="$environment_name" && {
       echo "configured api-key for $service_account"
@@ -113,15 +113,15 @@ function ccloud::kafka::apply_secret_for_api_key() {
     return $retcode
   }
 
-  local key=$(echo $ccloud_api_key | jq -r '.key')
-  local secret=$(echo $ccloud_api_key | jq -r '.secret')
+  local key=$(echo "$ccloud_api_key" | jq -r '.key')
+  local secret=$(echo "$ccloud_api_key" | jq -r '.secret')
 
-  local kafka_description=$(ccloud kafka cluster describe $kafka_id -o json)
-  local kafka_name=$(echo $kafka_description | jq -r '.name')
+  local kafka_description=$(ccloud kafka cluster describe "$kafka_id" -o json)
+  local kafka_name=$(echo "$kafka_description" | jq -r '.name')
 
   local secret_name="cc.sasl-jaas-config.$service_account.$environment_name.$kafka_name"
 
-  local result=$(kubectl create secret generic $secret_name --from-literal="sasl-jaas-config.properties"="sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$key\" password=\"$secret\";" -o yaml --dry-run=client | kubectl apply -f -)
+  local result=$(kubectl create secret generic "$secret_name" --from-literal="sasl-jaas-config.properties"="sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$key\" password=\"$secret\";" -o yaml --dry-run=client | kubectl apply -f -)
 
 }
 

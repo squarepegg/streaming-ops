@@ -52,7 +52,7 @@ data:
             ],
             "acl": [
               {
-                "service-account": "microservices-events-api",
+                "service-account": "events-api-client",
                 "controls": [
                   { "operation" : "read,write,create,describe,describe-configs,delete", "permission": "allow",
                     "resource": "topic", "name": "*" },
@@ -66,7 +66,7 @@ data:
               }
             ],
             "api-key": [
-              { "service-account": "microservices-events-api" }
+              { "service-account": "events-api-client" }
             ]
           }
         ]

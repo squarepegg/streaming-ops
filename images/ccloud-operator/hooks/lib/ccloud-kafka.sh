@@ -42,6 +42,9 @@ function ccloud::kafka::apply_list() {
     local api_key=$(echo $KAFKA | jq -r -c '."api-key"')
     [[ "$api_key" != "null" ]] && ccloud::kafka::apply_secret_from_api_key_list kafka_id="$kafka_id" api_key_list="$api_key" environment_name="$environment_name"
 
+    local schema=$(echo $KAFKA | jq -r -c .schema)
+    ccloud::schema::apply_list kafka_id=$kafka_id schema="$schema"
+
 	done
 
 	return 0

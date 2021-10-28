@@ -33,7 +33,7 @@ function ccloud::schema::apply() {
 	retry 30 ccloud schema-registry schema create $subject_flag $schema_flag $type_flag &> /dev/null && {
 
 		retry 60 ccloud schema-registry schema describe $subject_flag $version_flag &> /dev/null || {
-			echo "Could not obtain description for topic $name"
+			echo "Could not obtain description for schema $subject"
 			exit 1
 		}
 

@@ -44,15 +44,15 @@ data:
               { "service-account": "microservices-events-api" }
             ],
             "schema": [
-              { "subject": "test", "type": "JSON", "schema": {
-                                                                   "type" : "record",
-                                                                   "namespace" : "Example",
-                                                                   "name" : "Employee",
-                                                                   "fields" : [
-                                                                           { "name" : "Name" , "type" : "string" },
-                                                                           { "name" : "Age" , "type" : "int" }
-                                                                   ]
-                                                             }
+              { "subject": "test", "type": "JSON", "schema_file": {
+                                                                        "type" : "record",
+                                                                        "namespace" : "Example",
+                                                                        "name" : "Employee",
+                                                                        "fields" : [
+                                                                                { "name" : "Name" , "type" : "string" },
+                                                                                { "name" : "Age" , "type" : "int" }
+                                                                        ]
+                                                                  }
               }
             ]
           }

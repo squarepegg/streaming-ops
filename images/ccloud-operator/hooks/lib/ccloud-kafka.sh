@@ -5,6 +5,7 @@ source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-topic.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-acl.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-api-key.sh
+source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema.sh
 
 function ccloud::kafka::apply_list() {
   local kafka environment_name

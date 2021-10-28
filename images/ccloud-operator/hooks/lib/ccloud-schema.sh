@@ -11,26 +11,26 @@ function ccloud::schema::apply_list() {
 
 		SCHEMA=$(echo "${SCHEMA_ENCODED}" | base64 -d)
 
-		local subject=$(echo $SCHEMA | jq -r .name)
+		local subject=$(echo $SCHEMA | jq -r .subject)
 		local type=$(echo $SCHEMA | jq -r .type)
-		local schema=$(echo $SCHEMA | jq -r .schema)
+		local schema_file=$(echo $SCHEMA | jq -r .schema_file)
 
-		ccloud::schema::apply kafka_id="$kafka_id" subject="$subject" type="$type" schema="$schema"
+		ccloud::schema::apply kafka_id="$kafka_id" subject="$subject" type="$type" schema_file="$schema_file"
 
 	done
 }
 
 function ccloud::schema::apply() {
-	local kafka_id subject type schema
+	local kafka_id subject type schema_file
 	local "${@}"
 
 	local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
 	local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
-	local schema_flag=$([[ "$schema" == "null" ]] && echo "" || echo "--schema ${schema}");
+	local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema ${schema_file}");
 
 	local version_flag="--version latest"
 
-	retry 30 ccloud schema-registry schema create $subject_flag $schema_flag $type_flag &> /dev/null && {
+	retry 30 ccloud schema-registry schema create $subject_flag $schema_file_flag $type_flag &> /dev/null && {
 
 		retry 60 ccloud schema-registry schema describe $subject_flag $version_flag &> /dev/null || {
 			echo "Could not obtain description for schema $subject"

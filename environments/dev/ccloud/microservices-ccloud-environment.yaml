@@ -18,12 +18,12 @@ data:
         },
         "kafka": [
           {
-            "name": "microservices-orders",
+            "name": "testing-out-k8s-operators",
             "cloud": "aws",
             "region": "us-west-2",
             "topic": [
               { "name": "test", "partitions": 3 },
-              { "name": "test-compact", "partitions": 1, "config": "cleanup.policy=compact" }
+              { "name": "test-compacted", "partitions": 1, "config": "cleanup.policy=compact" }
             ],
             "acl": [
               {

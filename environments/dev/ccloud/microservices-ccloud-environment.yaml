@@ -43,7 +43,7 @@ data:
         },
         "kafka": [
           {
-            "name": "testing-out-k8s-operators",
+            "name": "nic-test-1",
             "cloud": "aws",
             "region": "us-west-2",
             "topic": [

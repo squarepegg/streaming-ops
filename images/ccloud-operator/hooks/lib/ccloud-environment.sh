@@ -3,6 +3,7 @@ LIB_CCLOUD_ENV=`date`
 
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-kafka.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema-registry.sh
+source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema.sh
 
 function ccloud::env::apply_list() {
   for ENV_ENCODED in $(echo $1 | jq -c -r '.[] | @base64'); do
@@ -23,6 +24,10 @@ function ccloud::env::apply_list() {
       local SR=$(echo $ENV | jq -r -c '."schema-registry"')
       local sr_id=$(ccloud::schema-registry::apply sr="$SR" environment_name="$envname")
       echo "configured schema-registry: $sr_id"
+
+      local schema=$(echo $SR | jq -r -c .schema)
+      ccloud::schema::apply_list schema="$schema" service_account_name="streaming-ops-sr-client" resource_id="$sr_id"
+
     else
       echo "Error $? applying environment: $envname, $env_id"
     fi

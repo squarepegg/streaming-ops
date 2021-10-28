@@ -22,7 +22,7 @@ data:
             "cloud": "aws",
             "region": "us-west-2",
             "topic": [
-              { "name": "test", "partitions": 3 },
+              { "name": "test", "partitions": 4 },
               { "name": "test-compacted", "partitions": 1, "config": "cleanup.policy=compact" }
             ],
             "acl": [

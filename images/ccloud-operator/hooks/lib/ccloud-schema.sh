@@ -7,7 +7,7 @@ function ccloud::schema::apply_list() {
 	local kafka_id schema
 	local "${@}"
 
-	for SCHEMA_ENCODED in $(echo schema | jq -c -r '.[] | @base64'); do
+	for SCHEMA_ENCODED in $(echo $schema | jq -c -r '.[] | @base64'); do
 
 		SCHEMA=$(echo "${SCHEMA_ENCODED}" | base64 -d)
 
@@ -26,11 +26,25 @@ function ccloud::schema::apply() {
 
 	local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
 	local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
-	local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema ${schema_file}");
+
+  echo $schema_file
+
+	echo $schema_file > /usr/schema.file
+
+	if [[ -f "/usr/schema.file" ]]
+  then
+      echo "This file exists on your filesystem."
+  fi
+
+	local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema /usr/schema.file");
 
 	local version_flag="--version latest"
 
-	retry 30 ccloud schema-registry schema create $subject_flag $schema_file_flag $type_flag &> /dev/null && {
+
+
+	retry 30 ccloud schema-registry schema create $subject_flag $type_flag $schema_file_flag &> /dev/null && {
+
+    rm /usr/schema.file
 
 		retry 60 ccloud schema-registry schema describe $subject_flag $version_flag &> /dev/null || {
 			echo "Could not obtain description for schema $subject"

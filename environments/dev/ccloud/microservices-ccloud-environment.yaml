@@ -43,6 +43,18 @@ data:
             "api-key": [
               { "service-account": "microservices-events-api" }
             ]
+            "schema": [
+              { "subject": "test", "type": "JSON", "schema": {
+                                                                   "type" : "record",
+                                                                   "namespace" : "Example",
+                                                                   "name" : "Employee",
+                                                                   "fields" : [
+                                                                           { "name" : "Name" , "type" : "string" },
+                                                                           { "name" : "Age" , "type" : "int" }
+                                                                   ]
+                                                             }
+              }
+            ]
           }
         ]
       }

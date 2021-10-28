@@ -4,7 +4,7 @@ LIB_CCLOUD_SCHEMA=`date`
 source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 
 function ccloud::schema::apply_list() {
-	local kafka_id schema
+	local schema key secret
 	local "${@}"
 
 	for SCHEMA_ENCODED in $(echo $schema | jq -c -r '.[] | @base64'); do
@@ -15,34 +15,28 @@ function ccloud::schema::apply_list() {
 		local type=$(echo $SCHEMA | jq -r .type)
 		local schema_file=$(echo $SCHEMA | jq -r .schema_file)
 
-		ccloud::schema::apply kafka_id="$kafka_id" subject="$subject" type="$type" schema_file="$schema_file"
+		ccloud::schema::apply kafka_id="$kafka_id" subject="$subject" type="$type" schema_file="$schema_file" key="$key" secret="$secret"
 
 	done
 }
 
 function ccloud::schema::apply() {
-	local kafka_id subject type schema_file
+	local kafka_id subject type schema_file key secret
 	local "${@}"
 
 	local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
 	local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
 
-  echo $schema_file
-
 	echo $schema_file > /usr/schema.file
-
-	if [[ -f "/usr/schema.file" ]]
-  then
-      echo "This file exists on your filesystem."
-  fi
 
 	local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema /usr/schema.file");
 
 	local version_flag="--version latest"
 
+	local apikey_flag="--api-key $key"
+	local apisecret_flag="--api-secret $secret"
 
-
-	retry 30 ccloud schema-registry schema create $subject_flag $type_flag $schema_file_flag &> /dev/null && {
+	retry 30 ccloud schema-registry schema create $subject_flag $type_flag $schema_file_flag $apikey_flag $apisecret_flag &> /dev/null && {
 
     rm /usr/schema.file
 

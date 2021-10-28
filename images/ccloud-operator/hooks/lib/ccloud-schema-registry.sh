@@ -3,6 +3,7 @@ LIB_CCLOUD_ENV=`date`
 
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-kafka.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-api-key.sh
+source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema.sh
 
 ####################################################################
 # Apply an schema-registry configuration given in json as the
@@ -13,14 +14,16 @@ function ccloud::schema-registry::apply() {
   local "${@}"
 
   local cloud=$(echo $sr | jq -r .cloud)
-  local geo=$(echo $sr | jq -r .geo)	
+  local geo=$(echo $sr | jq -r .geo)
 
   local result=$(ccloud schema-registry cluster enable --cloud "$cloud" --geo "$geo" -o json)
 
   local sr_id=$(echo $result | jq -r '.id')
 
   local api_key=$(echo $sr | jq -r -c '."api-key"')
-  [[ "$api_key" != "null" ]] && ccloud::schema-registry::apply_secret_from_api_key_list sr_id="$sr_id" api_key_list="$api_key" environment_name="$environment_name"
+
+  local schema=$(echo $sr | jq -r -c .schema)
+  [[ "$api_key" != "null" ]] && ccloud::schema-registry::apply_secret_from_api_key_list sr_id="$sr_id" api_key_list="$api_key" environment_name="$environment_name" schema="$schema"
 
   local endpoint_result=$(ccloud::schema-registry::apply_secret_for_endpoint environment_name="$environment_name") || {
     local ret_code=$?
@@ -32,16 +35,16 @@ function ccloud::schema-registry::apply() {
 }
 
 function ccloud::schema-registry::apply_secret_from_api_key_list() {
-  local sr_id api_key_list environment_name
+  local sr_id api_key_list environment_name schema
   local "${@}"
-  
+
 	for API_KEY_ENCODED in $(echo $api_key_list | jq -c -r '.[] | @base64'); do
-		
+
 		API_KEY=$(echo "${API_KEY_ENCODED}" | base64 -d)
 
     local service_account=$(echo $API_KEY | jq -r '."service-account"')
 
-    ccloud::schema-registry::apply_secret_for_api_key service_account="$service_account" sr_id="$sr_id" environment_name="$environment_name"
+    ccloud::schema-registry::apply_secret_for_api_key service_account="$service_account" sr_id="$sr_id" environment_name="$environment_name" schema="$schema"
 
   done
 }
@@ -58,11 +61,12 @@ function ccloud::schema-registry::apply_secret_for_api_key() {
 
   local key=$(echo $ccloud_api_key | jq -r .key)
   local secret=$(echo $ccloud_api_key | jq -r .secret)
- 
+
   local secret_name="cc.schema-registry-basic-auth-user-info.$service_account.$environment_name"
 
   local result=$(kubectl create secret generic $secret_name --from-literal="schema-registry-basic-auth-user-info.properties"="schema.registry.basic.auth.user.info=$key:$secret" -o yaml --dry-run=client | kubectl apply -f -)
 
+  ccloud::schema::apply_list schema="$schema" key="$key" secret="$secret"
 }
 
 function ccloud::schema-registry::apply_secret_for_endpoint() {
@@ -76,5 +80,5 @@ function ccloud::schema-registry::apply_secret_for_endpoint() {
 
   local result=$(kubectl create secret generic $secret_name --from-literal="schema-registry-url.properties"="schema.registry.url=$endpoint" -o yaml --dry-run=client | kubectl apply -f -)
   echo $result
-  
+
 }

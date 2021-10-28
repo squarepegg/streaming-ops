@@ -5,7 +5,6 @@ source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-topic.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-acl.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-api-key.sh
-source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema.sh
 
 function ccloud::kafka::apply_list() {
   local kafka environment_name
@@ -42,9 +41,6 @@ function ccloud::kafka::apply_list() {
 
     local api_key=$(echo $KAFKA | jq -r -c '."api-key"')
     [[ "$api_key" != "null" ]] && ccloud::kafka::apply_secret_from_api_key_list kafka_id="$kafka_id" api_key_list="$api_key" environment_name="$environment_name"
-
-    local schema=$(echo $KAFKA | jq -r -c .schema)
-    ccloud::schema::apply_list kafka_id=$kafka_id schema="$schema"
 
 	done
 

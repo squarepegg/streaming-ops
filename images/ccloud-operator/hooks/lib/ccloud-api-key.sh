@@ -13,20 +13,21 @@ function ccloud::api_key::apply() {
   local category service_account_name resource_id
   local "${@}"
 
-  local sa_id=$(ccloud::sa::get_id name="$service_account_name") || {
+  local sa_id=$(ccloud::sa::get_id name=$service_account_name) || {
     echo "error retrieving service account id for $service_account_name"
     return "$SERVICE_ACCOUNT_NOT_FOUND"
   }
 
-  local secret_name=$(ccloud::api_key::build_api_key_secret_name service_account_name="$service_account_name" resource_id="$resource_id")
+  local secret_name=$(ccloud::api_key::build_api_key_secret_name service_account_name=$service_account_name resource_id=$resource_id)
 
   local existing_secret=$(kubectl get secrets/$secret_name -o json 2>/dev/null)
-  [[ ! -z "$existing_secret" ]] && {
+  [[ -n "$existing_secret" ]] && {
     local ccloud_api_key=$(echo "$existing_secret" | jq -r -c '.data."ccloud-api-key"')
+    ccloud_api_key=$(echo "${ccloud_api_key}" | base64 -d)
   }
 
   [[ -z "$ccloud_api_key" ]] && {
-    local ccloud_api_key=$(ccloud api-key create --service-account "$sa_id" --resource "$resource_id" --description "Created by ccloud-operator $(date) for sa:$service_account_name" -o json | jq -r -c '.')
+    local ccloud_api_key=$(ccloud api-key create --service-account $sa_id --resource $resource_id --description "Created by ccloud-operator $(date) for sa:$service_account_name" -o json | jq -r -c '.')
   }
 
   local key=$(echo $ccloud_api_key | jq -r '.key')

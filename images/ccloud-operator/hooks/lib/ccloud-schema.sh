@@ -11,7 +11,6 @@ function ccloud::schema::apply_list() {
 	local secret_name=$(ccloud::api_key::build_api_key_secret_name service_account_name="$service_account_name" resource_id="$resource_id")
 	local existing_secret=$(kubectl get secrets/"$secret_name" -o json 2>/dev/null)
 	local ccloud_api_key=$(echo "$existing_secret" | jq -r -c '.data."ccloud-api-key"')
-
   local ccloud_api_key_secret=$(echo "${ccloud_api_key}" | base64 -d)
   local key=$(echo "$ccloud_api_key_secret" | jq -r .key)
   local secret=$(echo "$ccloud_api_key_secret" | jq -r .secret)
@@ -33,28 +32,28 @@ function ccloud::schema::apply() {
 	local subject type schema_file key secret
 	local "${@}"
 
-	local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
-	local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
+	#local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
+	#local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
 
 	echo "$schema_file" > /usr/schema.file
 
-	local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema /usr/schema.file");
+	#local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema /usr/schema.file");
 
-	local version_flag="--version latest"
+	#local version_flag="--version latest"
 
-	local apikey_flag="--api-key '${key}'"
-	local apisecret_flag="--api-secret '${secret}'"
+	#local apikey_flag="--api-key '${key}'"
+	local apisecret="'${secret}'"
 
-	echo ccloud schema-registry schema create "$subject_flag" "$type_flag" "$schema_file_flag" "$apikey_flag" "$apisecret_flag"
+	echo ccloud schema-registry schema create --subject $subject --type $type --schema /usr/schema.file --api-key $key --api-secret "$secret"
 
-  error=$(ccloud schema-registry schema create "$subject_flag" "$type_flag" "$schema_file_flag" "$apikey_flag" "$apisecret_flag" 2>&1)
+  error=$(ccloud schema-registry schema create --subject $subject --type $type --schema /usr/schema.file --api-key $key --api-secret "$secret" 2>&1)
   echo "${error}"
 
-	retry 30 ccloud schema-registry schema create $subject_flag $type_flag $schema_file_flag "$apikey_flag" "$apisecret_flag" &> /dev/null && {
+	retry 30 ccloud schema-registry schema create --subject $subject --type $type --schema /usr/schema.file --api-key $key --api-secret "$secret" &> /dev/null && {
 
     rm /usr/schema.file
 
-		retry 60 ccloud schema-registry schema describe $subject_flag $version_flag &> /dev/null || {
+		retry 60 ccloud schema-registry schema describe --subject $subject --version latest &> /dev/null || {
 			echo "Could not obtain description for schema $subject"
 			exit 1
 		}

@@ -25,8 +25,9 @@ function ccloud::env::apply_list() {
       local sr_id=$(ccloud::schema-registry::apply sr="$SR" environment_name="$envname")
       echo "configured schema-registry: $sr_id"
 
+      local service_account_name=$(echo $SR | jq -r -c '."api-key"[0]."service-account"')
       local schema=$(echo $SR | jq -r -c .schema)
-      ccloud::schema::apply_list schema="$schema" service_account_name="streaming-ops-sr-client" resource_id="$sr_id"
+      ccloud::schema::apply_list schema="$schema" service_account_name="$service_account_name" resource_id="$sr_id"
 
     else
       echo "Error $? applying environment: $envname, $env_id"

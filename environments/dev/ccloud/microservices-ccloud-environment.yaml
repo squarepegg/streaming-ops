@@ -51,6 +51,7 @@ data:
         "schema-registry": {
           "cloud": "aws",
           "geo": "us",
+          "type": "basic",
           "api-key": [
             { "service-account": "streaming-ops-sr-client" }
           ],

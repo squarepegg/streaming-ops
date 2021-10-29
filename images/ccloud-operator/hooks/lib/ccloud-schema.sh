@@ -32,22 +32,7 @@ function ccloud::schema::apply() {
 	local subject type schema_file key secret
 	local "${@}"
 
-	#local subject_flag=$([[ $subject == "null" ]] && echo "" || echo "--subject $subject");
-	#local type_flag=$([[ "$type" == "null" ]] && echo "" || echo "--type ${type}");
-
 	echo "$schema_file" > /usr/schema.file
-
-	#local schema_file_flag=$([[ "$schema_file" == "null" ]] && echo "" || echo "--schema /usr/schema.file");
-
-	#local version_flag="--version latest"
-
-	#local apikey_flag="--api-key '${key}'"
-	local apisecret="'${secret}'"
-
-	echo ccloud schema-registry schema create --subject $subject --type $type --schema /usr/schema.file --api-key $key --api-secret "$secret"
-
-  error=$(ccloud schema-registry schema create --subject $subject --type $type --schema /usr/schema.file --api-key $key --api-secret "$secret" 2>&1)
-  echo "${error}"
 
 	retry 30 ccloud schema-registry schema create --subject $subject --type $type --schema /usr/schema.file --api-key $key --api-secret "$secret" &> /dev/null && {
 

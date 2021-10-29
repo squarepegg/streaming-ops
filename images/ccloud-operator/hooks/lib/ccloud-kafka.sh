@@ -17,8 +17,9 @@ function ccloud::kafka::apply_list() {
 		local name=$(echo $KAFKA | jq -r .name)
 		local cloud=$(echo $KAFKA | jq -r .cloud)
 		local region=$(echo $KAFKA | jq -r .region)
+		local cluster_type=$(echo $KAFKA | jq -r .type)
 
-		local kafka_id=$(ccloud::kafka::apply name="$name" cloud="$cloud" region="$region" environment_name="$environment_name")
+		local kafka_id=$(ccloud::kafka::apply name="$name" cloud="$cloud" region="$region" environment_name="$environment_name", cluster_type="$cluster_type")
 
 		echo "configured kafka cluster: $name, id = $kafka_id"
 
@@ -48,7 +49,7 @@ function ccloud::kafka::apply_list() {
 }
 
 function ccloud::kafka::apply() {
-	local name cloud region environment_name
+	local name cloud region environment_name cluster_type
 	local "${@}"
 
   # TODO: Determine if matching on name only is better, in the current case, changing cloud/region will
@@ -60,7 +61,7 @@ function ccloud::kafka::apply() {
       local kafka_id=$(echo "$FOUND_CLUSTER" | jq -r .id)
   } || {
 
-    result=$(ccloud kafka cluster create "$name" --cloud "$cloud" --region "$region" -o json 2>&1)
+    result=$(ccloud kafka cluster create "$name" --cloud "$cloud" --region "$region" --type "$cluster_type" -o json 2>&1)
 		retcode=$?
 
 		if [[ $retcode -eq 0 ]]; then

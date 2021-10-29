@@ -4,3 +4,4 @@ resources:
 - ccloud-operator.yaml
 - microservices-ccloud-environment.yaml
 - shared-client-config.yaml
+- security.yaml

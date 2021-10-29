@@ -51,7 +51,6 @@ data:
         "schema-registry": {
           "cloud": "aws",
           "geo": "us",
-          "type": "basic",
           "api-key": [
             { "service-account": "streaming-ops-sr-client" }
           ],
@@ -86,6 +85,7 @@ data:
             "name": "nic-test-1",
             "cloud": "aws",
             "region": "us-west-2",
+            "type": "basic",
             "topic": [
               { "name": "test", "partitions": 3, "config": "retention.ms=86400000" },
               { "name": "test-compacted", "partitions": 1, "config": "cleanup.policy=compact" }

@@ -8,13 +8,13 @@ data:
   environments: |
     [
       {
-        "name: "DevCycle",
+        "name": "DevCycle",
         "schema-registry": {
           "cloud": "aws",
           "geo": "us",
           "api-key": [
             { "service-account": "streaming-ops-sr-client" }
-          ],
+          ]
         },
         "kafka": [
           {
@@ -24,70 +24,6 @@ data:
             "type": "standard",
             "topic": [
               { "name": "client.events", "partitions": 24 }
-            ],
-            "acl": [
-              {
-                "service-account": "events-api-client",
-                "controls": [
-                  { "operation" : "read,write,create,describe,describe-configs,delete", "permission": "allow",
-                    "resource": "topic", "name": "*" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "EventsApi" },
-                  { "operation" : "write,describe", "permission": "allow",
-                    "resource": "transactional-id", "name": "*" },
-                  { "operation" : "idempotent-write", "permission": "allow",
-                    "resource": "cluster-scope" }
-                ]
-              }
-            ],
-            "api-key": [
-              { "service-account": "events-api-client" }
-            ]
-          }
-]
-      },
-      {
-        "name": "streaming-ops-dev",
-        "schema-registry": {
-          "cloud": "aws",
-          "geo": "us",
-          "api-key": [
-            { "service-account": "streaming-ops-sr-client" }
-          ],
-          "schema": [
-            { "subject": "test", "type": "JSON", "schema_file": {
-                                                                  "$schema": "http://json-schema.org/draft-07/schema#",
-                                                                  "$id": "http://example.com/myURI.schema.json",
-                                                                  "title": "SampleRecord",
-                                                                  "description": "Sample schema to help you get started.",
-                                                                  "type": "object",
-                                                                  "additionalProperties": false,
-                                                                  "properties": {
-                                                                    "myField1": {
-                                                                      "type": "integer",
-                                                                      "description": "The integer type is used for integral numbers."
-                                                                    },
-                                                                    "myField2": {
-                                                                      "type": "number",
-                                                                      "description": "The number type is used for any numeric type, either integers or floating point numbers."
-                                                                    },
-                                                                    "myField3": {
-                                                                      "type": "string",
-                                                                      "description": "The string type is used for strings of text."
-                                                                    }
-                                                                  }
-                                                                }
-            }
-          ]
-        },
-        "kafka": [
-          {
-            "name": "nic-test-1",
-            "cloud": "aws",
-            "region": "us-west-2",
-            "topic": [
-              { "name": "test", "partitions": 3, "config": "retention.ms=86400000" },
-              { "name": "test-compacted", "partitions": 1, "config": "cleanup.policy=compact" }
             ],
             "acl": [
               {

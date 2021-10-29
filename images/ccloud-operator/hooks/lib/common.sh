@@ -40,7 +40,7 @@ kubernetes:
       destination: ccloud
   namespace:
     nameSelector:
-      matchNames: ["confluent"]
+      matchNames: ["default"]
   jqFilter: ".data"
 EOF
 }

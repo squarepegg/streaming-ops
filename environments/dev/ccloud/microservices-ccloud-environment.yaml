@@ -8,46 +8,7 @@ data:
   environments: |
     [
       {
-        "name": "DevCycle",
-        "schema-registry": {
-          "cloud": "aws",
-          "geo": "us",
-          "api-key": [
-            { "service-account": "streaming-ops-sr-client" }
-          ]
-        },
-        "kafka": [
-          {
-            "name": "production",
-            "cloud": "aws",
-            "region": "us-east-1",
-            "type": "standard",
-            "topic": [
-              { "name": "client.events", "partitions": 24 }
-            ],
-            "acl": [
-              {
-                "service-account": "events-api-client",
-                "controls": [
-                  { "operation" : "read,write,create,describe,describe-configs,delete", "permission": "allow",
-                    "resource": "topic", "name": "*" },
-                  { "operation" : "read,write,create", "permission": "allow",
-                    "resource": "consumer-group", "name": "EventsApi" },
-                  { "operation" : "write,describe", "permission": "allow",
-                    "resource": "transactional-id", "name": "*" },
-                  { "operation" : "idempotent-write", "permission": "allow",
-                    "resource": "cluster-scope" }
-                ]
-              }
-            ],
-            "api-key": [
-              { "service-account": "events-api-client" }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "streaming-ops-dev",
+        "name": "ShellOperatorTest",
         "schema-registry": {
           "cloud": "aws",
           "geo": "us",

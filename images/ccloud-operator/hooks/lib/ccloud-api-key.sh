@@ -6,7 +6,7 @@ source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 function ccloud::api_key::build_api_key_secret_name() {
   local service_account_name resource_id
   local "${@}"
-  echo "cc.api-key.$service_account_name.$resource_id"
+  echo "cc.api-key.$service_account_name.$resource_id" | tr '[:upper:]' '[:lower:]'
 }
 
 function ccloud::api_key::apply() {

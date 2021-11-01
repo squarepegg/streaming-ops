@@ -8,7 +8,7 @@ data:
   environments: |
     [
       {
-        "name": "devcycle",
+        "name": "DevCycle",
         "schema-registry": {
           "cloud": "aws",
           "geo": "us",

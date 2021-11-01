@@ -19,7 +19,7 @@ function ccloud::kafka::apply_list() {
 		local region=$(echo $KAFKA | jq -r .region)
 		local cluster_type=$(echo $KAFKA | jq -r .type)
 
-		local kafka_id=$(ccloud::kafka::apply name="$name" cloud="$cloud" region="$region" environment_name="$environment_name", cluster_type="$cluster_type")
+		local kafka_id=$(ccloud::kafka::apply name="$name" cloud="$cloud" region="$region" environment_name="$environment_name" cluster_type="$cluster_type")
 
 		echo "configured kafka cluster: $name, id = $kafka_id"
 

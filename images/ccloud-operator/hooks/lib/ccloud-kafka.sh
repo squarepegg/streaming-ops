@@ -5,6 +5,7 @@ source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-topic.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-acl.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-api-key.sh
+source $SHELL_OPERATOR_HOOKS_DIR/lib/aws-secrets-manager.sh
 
 function ccloud::kafka::apply_list() {
   local kafka environment_name
@@ -120,10 +121,9 @@ function ccloud::kafka::apply_secret_for_api_key() {
   local kafka_description=$(ccloud kafka cluster describe $kafka_id -o json)
   local kafka_name=$(echo $kafka_description | jq -r '.name')
 
-  local secret_name="cc.sasl-jaas-config.$service_account.$environment_name.$kafka_name"
+  local secret_name=$(common::to_lower_case string_to_lower="cc.sasl-jaas-config.$service_account.$environment_name.$kafka_name")
 
   local result=$(kubectl create secret generic $secret_name --from-literal="sasl-jaas-config.properties"="sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$key\" password=\"$secret\";" -o yaml --dry-run=client | kubectl apply -f -)
-
 }
 
 function ccloud::kafka::apply_secret_for_endpoint() {
@@ -136,7 +136,9 @@ function ccloud::kafka::apply_secret_for_endpoint() {
   local provider=$(echo $kafka_description | jq -r '.provider')
   local region=$(echo $kafka_description | jq -r '.region')
 
-  local secret_name="cc.bootstrap-servers.$environment_name.$kafka_name"
+  local secret_name=$(common::to_lower_case string_to_lower="cc.bootstrap-servers.$environment_name.$kafka_name")
+
+  aws::secrets_manager::write_secret secret="$secret_name"
 
   local result=$(kubectl create secret generic $secret_name --from-literal="bootstrap-servers.properties"="bootstrap.servers=$endpoint" -o yaml --dry-run=client | kubectl apply -f -)
   echo $result
@@ -152,10 +154,12 @@ function ccloud::kafka::apply_kafka_description_configmap() {
   local environment_name kafka_id
   local "${@}"
 
-  local environment_id=$(kubectl get configmap/cc.env."$environment_name" -o json | jq -r ".data.id")
+  local env_name=$(common::to_lower_case string_to_lower="$environment_name")
+  local environment_id=$(kubectl get configmap/cc.env."$env_name" -o json | jq -r ".data.id")
 
   local kafka_description=$(ccloud kafka cluster describe --environment "$environment_id" "$kafka_id" -o json | jq -r '.')
   local kafka_name=$(echo $kafka_description | jq -r '.name')
 
-  kubectl create configmap "cc.env.$environment_name.kafka.$kafka_name" --from-literal="description"="$kafka_description" --dry-run=client -o yaml | kubectl label -f - --dry-run=client -o yaml --local resource_id=$kafka_id --local environment_id=$environment_id | kubectl apply -f - >/dev/null 2>&1
+  local configMapName=$(common::to_lower_case string_to_lower="cc.env.$environment_name.kafka.$kafka_name")
+  kubectl create configmap "$configMapName" --from-literal="description"="$kafka_description" --dry-run=client -o yaml | kubectl label -f - --dry-run=client -o yaml --local resource_id=$kafka_id --local environment_id=$environment_id | kubectl apply -f - >/dev/null 2>&1
 }

@@ -1,6 +1,7 @@
 if [ -n "$LIB_CCLOUD_ENV" ]; then return; fi
 LIB_CCLOUD_ENV=`date`
 
+source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-kafka.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema-registry.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-schema.sh
@@ -82,5 +83,6 @@ function ccloud::env::apply_env_id_configmap() {
   local name
   local id
   local "${@}"
-  kubectl create configmap "cc.env.$name" --from-literal="id"="$id" --dry-run=client -o yaml | kubectl label -f - --dry-run=client -o yaml --local resource_id=$id | kubectl apply -f - >/dev/null 2>&1
+  local env_name=$(common::to_lower_case string_to_lower="$name")
+  kubectl create configmap "cc.env.$env_name" --from-literal="id"="$id" --dry-run=client -o yaml | kubectl label -f - --dry-run=client -o yaml --local resource_id=$id | kubectl apply -f - >/dev/null 2>&1
 }

@@ -53,3 +53,9 @@ function common::run_hook() {
   fi
 }
 
+function common::to_lower_case() {
+  local string_to_lower
+  local "${@}"
+
+  echo "$string_to_lower" | tr '[:upper:]' '[:lower:]'
+}

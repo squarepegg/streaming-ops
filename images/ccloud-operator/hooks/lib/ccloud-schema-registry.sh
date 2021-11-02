@@ -1,6 +1,7 @@
 if [ -n "$LIB_CCLOUD_SR" ]; then return; fi
 LIB_CCLOUD_ENV=`date`
 
+source $SHELL_OPERATOR_HOOKS_DIR/lib/common.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-kafka.sh
 source $SHELL_OPERATOR_HOOKS_DIR/lib/ccloud-api-key.sh
 
@@ -60,7 +61,7 @@ function ccloud::schema-registry::apply_secret_for_api_key() {
   local key=$(echo $ccloud_api_key | jq -r .key)
   local secret=$(echo $ccloud_api_key | jq -r .secret)
 
-  local secret_name="cc.schema-registry-basic-auth-user-info.$service_account.$environment_name"
+  local secret_name=$(common::to_lower_case string_to_lower="cc.schema-registry-basic-auth-user-info.$service_account.$environment_name")
 
   local result=$(kubectl create secret generic $secret_name --from-literal="schema-registry-basic-auth-user-info.properties"="schema.registry.basic.auth.user.info=$key:$secret" -o yaml --dry-run=client | kubectl apply -f -)
 }
@@ -72,7 +73,7 @@ function ccloud::schema-registry::apply_secret_for_endpoint() {
   local sr_description=$(ccloud schema-registry cluster describe -o json)
   local endpoint=$(echo $sr_description | jq -r '.endpoint_url')
 
-  local secret_name="cc.schema-registry-url.$environment_name"
+  local secret_name=$(common::to_lower_case string_to_lower="cc.schema-registry-url.$environment_name")
 
   local result=$(kubectl create secret generic $secret_name --from-literal="schema-registry-url.properties"="schema.registry.url=$endpoint" -o yaml --dry-run=client | kubectl apply -f -)
   echo $result

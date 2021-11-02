@@ -38,18 +38,10 @@ function ccloud::schema::apply() {
 
     rm /usr/schema.file
 
-		retry 60 ccloud schema-registry schema describe --subject $subject --version latest &> /dev/null || {
+		retry 60 ccloud schema-registry schema describe --subject $subject --version latest --api-key $key --api-secret "$secret" &> /dev/null || {
 			echo "Could not obtain description for schema $subject"
 			exit 1
 		}
-
-		# Experienced some issues with back to back create and the describe of topics
-		# 	So the `retry` above waits until the describe returns a valid return code
-		#		But them I'm calling it again to properly capture the output in json
-		#		form so we can process the description of the topic
-		#result=$(ccloud kafka topic describe $name --cluster "$kafka_id" -o json)
-		#local current_config=$(echo $result | jq -r -c '.config')
-		#[[ "$config" == "null" ]] || ccloud::schema::update name="$name" kafka_id="$kafka_id" config="$config" current_config="$current_config"
 
 		echo "configured schema: $schema"
 

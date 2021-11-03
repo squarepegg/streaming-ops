@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: streaming-ops-ccloud-environment
+  namespace: confluent
   labels:
     destination: ccloud
 data:

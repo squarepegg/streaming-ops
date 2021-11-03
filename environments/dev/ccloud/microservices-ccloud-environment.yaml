@@ -50,6 +50,7 @@ data:
             "type": "basic",
             "topic": [
               { "name": "test", "partitions": 3, "config": "retention.ms=86400000" },
+              { "name": "test-two", "partitions": 3 },
               { "name": "test-compacted", "partitions": 1, "config": "cleanup.policy=compact" }
             ],
             "acl": [

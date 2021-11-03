@@ -59,3 +59,10 @@ function common::to_lower_case() {
 
   echo "$string_to_lower" | tr '[:upper:]' '[:lower:]'
 }
+
+function common::to_upper_case() {
+  local string_to_upper
+  local "${@}"
+
+  echo "$string_to_upper" | tr '[:lower:]' '[:upper:]'
+}

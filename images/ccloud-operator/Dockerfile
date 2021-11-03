@@ -32,8 +32,6 @@ RUN apk --no-cache add \
         curl \
     && rm -rf /var/cache/apk/*
 
-#RUN curl -L --http1.1 https://cnfl.io/ccloud-cli | sh -s -- -b /usr/bin latest
-
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v${K8S_VER}/bin/linux/amd64/kubectl -O /bin/kubectl && chmod +x /bin/kubectl
 
 ADD hooks /hooks

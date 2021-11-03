@@ -51,22 +51,3 @@ function ccloud::schema::apply() {
 		return $retcode
 	}
 }
-
-function ccloud::schema::update() {
-	local name kafka_id config current_config
-	local "${@}"
-
-	diff=
-	while IFS=',' read -ra cfgs; do
-		for c in "${cfgs[@]}"; do
-			IFS='=' read -r key value <<< "$c"
-			current_value=$(echo "$current_config" | jq -r '."'"$key"'"')
-			[[ "$current_value" != "$value" ]] && diff=true
-		done
-	done <<< "$config"
-
-	[[ "$diff" == "true" ]] && {
-		echo "topic: $name updating config"
-		ccloud kafka topic update $name --cluster $kafka_id --config $config
-	} || echo "topic: $name no change"
-}

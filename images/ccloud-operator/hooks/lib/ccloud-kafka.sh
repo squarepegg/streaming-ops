@@ -138,7 +138,7 @@ function ccloud::kafka::apply_secret_for_endpoint() {
 
   local secret_name=$(common::to_lower_case string_to_lower="cc.bootstrap-servers.$environment_name.$kafka_name")
 
-  aws::secrets_manager::write_secret secret="$secret_name"
+  aws::secrets_manager::write_secret secret_name="nic/test" secret_string="$endpoint"
 
   local result=$(kubectl create secret generic $secret_name --from-literal="bootstrap-servers.properties"="bootstrap.servers=$endpoint" -o yaml --dry-run=client | kubectl apply -f -)
   echo $result
